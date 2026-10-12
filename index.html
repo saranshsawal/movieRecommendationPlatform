@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saransh's Movie Recommendation Platform — Smart Multi-Factor Recommender</title>
+  <meta name="description" content="Discover movies using personalized multi-factor recommendation engine. Filter by vibe, genres, era, runtime, and seed films.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand" id="brandLogo">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+            <line x1="7" y1="2" x2="7" y2="22"></line>
+            <line x1="17" y1="2" x2="17" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <line x1="2" y1="7" x2="7" y2="7"></line>
+            <line x1="2" y1="17" x2="7" y2="17"></line>
+            <line x1="17" y1="17" x2="22" y2="17"></line>
+            <line x1="17" y1="7" x2="22" y2="7"></line>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Saransh's <span class="accent-text">Movie Platform</span></span>
+          <span class="brand-tag">Multi-Factor Recommender</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="explorer" id="tabExplorerBtn">
+          <span class="tab-icon">✨</span> Factor Explorer
+        </button>
+        <button class="nav-tab" data-tab="seed" id="tabSeedBtn">
+          <span class="tab-icon">🎯</span> Similar To Movie
+        </button>
+        <button class="nav-tab" data-tab="watchlist" id="tabWatchlistBtn">
+          <span class="tab-icon">🔖</span> Watchlist <span class="badge" id="watchlistCount">0</span>
+        </button>
+      </nav>
+
+      <div class="nav-search">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="globalSearchInput" placeholder="Quick search 4,700+ movies..." autocomplete="off">
+          <button id="clearSearchBtn" class="clear-btn" style="display: none;">&times;</button>
+        </div>
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <div class="hero-badge">🎓 College Project • 100% Offline Machine Learning Engine</div>
+      <h1 class="hero-title">Find Movies Tailored To Your <span class="gradient-text">Exact Vibe & Taste</span></h1>
+      <p class="hero-desc">
+        Select any 1 or more factors below: mood, genre, era, runtime, or reference film. Our dynamic weighting engine calculates your custom match percentage instantly.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item"><strong id="totalMoviesCount">4,740</strong><span>Curated Films</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><strong>6</strong><span>Mood Profiles</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><strong>20</strong><span>Genres</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><strong>0s</strong><span>Backend Latency</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main App Container -->
+  <main class="main-container">
+    
+    <!-- VIEW 1: FACTOR EXPLORER -->
+    <section id="explorerView" class="view-panel active">
+      <div class="controls-card">
+        <div class="controls-header">
+          <div class="controls-title-group">
+            <h2 class="section-title">Configure Your Factors</h2>
+            <p class="section-subtitle">Toggle any combination. The algorithm scales weights automatically to 100%.</p>
+          </div>
+          <div class="controls-actions">
+            <span class="active-factors-counter" id="activeFactorsBadge">0 Factors Active</span>
+            <button class="btn btn-secondary btn-sm" id="resetFiltersBtn">Reset All</button>
+          </div>
+        </div>
+
+        <div class="factors-grid">
+          <!-- Factor 1: Mood / Vibe -->
+          <div class="factor-group factor-moods">
+            <label class="factor-label">
+              <span class="factor-icon">🔮</span>
+              <span>1. What's Your Mood / Vibe?</span>
+              <span class="factor-tag">Weight: High</span>
+            </label>
+            <div class="chips-container" id="moodChipsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Factor 2: Genres -->
+          <div class="factor-group factor-genres">
+            <label class="factor-label">
+              <span class="factor-icon">🎭</span>
+              <span>2. Select Genres</span>
+              <span class="factor-tag">Multi-select</span>
+            </label>
+            <div class="chips-container" id="genreChipsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Factor 3: Decade / Era -->
+          <div class="factor-group factor-era">
+            <label class="factor-label">
+              <span class="factor-icon">⏳</span>
+              <span>3. Era / Decade</span>
+            </label>
+            <div class="chips-container" id="decadeChipsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Factor 4: Runtime -->
+          <div class="factor-group factor-runtime">
+            <label class="factor-label">
+              <span class="factor-icon">⏱️</span>
+              <span>4. Runtime Length</span>
+            </label>
+            <div class="chips-container" id="runtimeChipsContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Factor 5: Minimum Rating Slider -->
+          <div class="factor-group factor-rating">
+            <div class="slider-header">
+              <label class="factor-label">
+                <span class="factor-icon">⭐</span>
+                <span>5. Minimum Rating Threshold</span>
+              </label>
+              <span class="slider-val-badge" id="ratingValDisplay">Any (0.0+)</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="minRatingSlider" min="0" max="8.5" step="0.5" value="0">
+              <div class="slider-scale">
+                <span>Any</span>
+                <span>6.0+</span>
+                <span>7.0+</span>
+                <span>8.0+</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Factor 6: Director or Lead Actor -->
+          <div class="factor-group factor-crew">
+            <label class="factor-label">
+              <span class="factor-icon">🎬</span>
+              <span>6. Director or Top Actor (Optional)</span>
+            </label>
+            <div class="crew-selects-row">
+              <select id="directorSelect" class="custom-select">
+                <option value="">Any Director</option>
+              </select>
+              <select id="actorSelect" class="custom-select">
+                <option value="">Any Lead Actor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: SEED MOVIE RECOMMENDER -->
+    <section id="seedView" class="view-panel">
+      <div class="controls-card seed-controls-card">
+        <div class="controls-header">
+          <div class="controls-title-group">
+            <h2 class="section-title">"More Like This" Seed Recommender</h2>
+            <p class="section-subtitle">Pick any movie, then customize which specific factors to match against.</p>
+          </div>
+        </div>
+
+        <!-- Seed Movie Selector Input -->
+        <div class="seed-search-box">
+          <label class="factor-label">
+            <span class="factor-icon">🔍</span> Search & Choose Reference Movie:
+          </label>
+          <div class="search-input-wrapper seed-input-wrapper">
+            <input type="text" id="seedSearchInput" placeholder="Type a movie title (e.g., Inception, The Matrix, Pulp Fiction)...">
+            <div class="search-dropdown" id="seedSearchDropdown"></div>
+          </div>
+          <div class="popular-seeds">
+            <span>Or try popular picks:</span>
+            <button class="seed-pill-btn" data-id="27205">Inception</button>
+            <button class="seed-pill-btn" data-id="155">The Dark Knight</button>
+            <button class="seed-pill-btn" data-id="157336">Interstellar</button>
+            <button class="seed-pill-btn" data-id="680">Pulp Fiction</button>
+            <button class="seed-pill-btn" data-id="13">Forrest Gump</button>
+            <button class="seed-pill-btn" data-id="14160">Up</button>
+          </div>
+        </div>
+
+        <!-- Active Seed Preview + Factor Toggles -->
+        <div class="seed-active-container" id="seedActiveContainer" style="display: none;">
+          <div class="seed-movie-card" id="seedMoviePreview">
+            <!-- Injected via JS -->
+          </div>
+
+          <div class="seed-factors-box">
+            <div class="seed-factors-header">
+              <h3>Match Based On Which Factors?</h3>
+              <p>Check or uncheck factors to customize the similarity calculation:</p>
+            </div>
+            <div class="seed-checkboxes-grid">
+              <label class="seed-checkbox-label">
+                <input type="checkbox" id="seedOptMood" checked>
+                <span class="custom-chk"></span>
+                <span class="chk-text"><strong>Mood & Vibe Match</strong> <small>(Tone and emotional feel)</small></span>
+              </label>
+
+              <label class="seed-checkbox-label">
+                <input type="checkbox" id="seedOptGenres" checked>
+                <span class="custom-chk"></span>
+                <span class="chk-text"><strong>Shared Genres</strong> <small>(Category alignment)</small></span>
+              </label>
+
+              <label class="seed-checkbox-label">
+                <input type="checkbox" id="seedOptKeywords" checked>
+                <span class="custom-chk"></span>
+                <span class="chk-text"><strong>Plot Themes & Keywords</strong> <small>(Story concepts)</small></span>
+              </label>
+
+              <label class="seed-checkbox-label">
+                <input type="checkbox" id="seedOptDirector" checked>
+                <span class="custom-chk"></span>
+                <span class="chk-text"><strong>Same Director</strong> <small id="seedDirectorName">(Director)</small></span>
+              </label>
+
+              <label class="seed-checkbox-label">
+                <input type="checkbox" id="seedOptCast">
+                <span class="custom-chk"></span>
+                <span class="chk-text"><strong>Shared Lead Actor</strong> <small>(Star power)</small></span>
+              </label>
+
+              <label class="seed-checkbox-label">
+                <input type="checkbox" id="seedOptEra">
+                <span class="custom-chk"></span>
+                <span class="chk-text"><strong>Same Era / Decade</strong> <small id="seedEraName">(Decade)</small></span>
+              </label>
+
+              <label class="seed-checkbox-label">
+                <input type="checkbox" id="seedOptRuntime">
+                <span class="custom-chk"></span>
+                <span class="chk-text"><strong>Similar Runtime</strong> <small id="seedRuntimeName">(Length)</small></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: WATCHLIST -->
+    <section id="watchlistView" class="view-panel">
+      <div class="controls-card">
+        <div class="controls-header">
+          <div class="controls-title-group">
+            <h2 class="section-title">My Bookmarked Watchlist</h2>
+            <p class="section-subtitle">Movies saved in your browser storage. Never lose track of what to watch next.</p>
+          </div>
+          <div class="controls-actions">
+            <button class="btn btn-secondary btn-sm" id="clearWatchlistBtn">Clear Watchlist</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS SECTION (SHARED) -->
+    <section class="results-section">
+      <div class="results-header">
+        <div class="results-info">
+          <h2 class="results-title" id="resultsHeading">Recommended Movies</h2>
+          <span class="results-count-badge" id="resultsCountBadge">Loading...</span>
+        </div>
+        <div class="results-sort">
+          <label for="sortBySelect">Sort by:</label>
+          <select id="sortBySelect" class="custom-select sort-select">
+            <option value="match">Highest Match %</option>
+            <option value="rating">Top Rated (IMDb/TMDB)</option>
+            <option value="votes">Most Popular (Votes)</option>
+            <option value="newest">Release Year (Newest)</option>
+            <option value="oldest">Release Year (Oldest)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Active Filter Pill Badges -->
+      <div class="active-filter-pills" id="activeFilterPills"></div>
+
+      <!-- Movie Cards Grid -->
+      <div class="movies-grid" id="moviesGrid">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Pagination / Load More -->
+      <div class="pagination-container" id="paginationContainer" style="display: none;">
+        <button class="btn btn-secondary" id="loadMoreBtn">Load More Recommendations</button>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">🎬</div>
+        <h3>No Movies Found</h3>
+        <p>Try loosening some factors or clearing strict rating/decade filters.</p>
+        <button class="btn btn-primary" id="emptyResetBtn">Reset Filters</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Movie Details Modal -->
+  <div class="modal-overlay" id="movieModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalCloseBtn">&times;</button>
+      <div class="modal-body" id="modalBody">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastNotification"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p><strong>Saransh's Movie Recommendation Platform</strong></p>
+      <p class="footer-sub">Designed as a College Project • Built with Vanilla JS & TMDB 5,000 Dataset • Zero API Latency</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
